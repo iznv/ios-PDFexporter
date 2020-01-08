@@ -17,6 +17,7 @@ static void * const kUIScrollViewDrawEntireContentSizeAssociatedStorageKey =
     CGRect drawingFrame = self.frame;
     if ([self isDrawingEntireContentSize]) {
         drawingFrame.size.height = fmaxf(self.contentSize.height, CGRectGetHeight(self.frame));
+        drawingFrame.size.width = fmaxf(self.contentSize.width, CGRectGetWidth(self.frame));
     }
     return drawingFrame;
 }

@@ -45,27 +45,26 @@ static UIEdgeInsets const kDefaultPaperInsets = {30.f, 30.f, 30.f, 30.f};
 
 - (instancetype)init {
     if (self = [super init]) {
-        _paperSize = PDFPaperSizeUSLetter;
-        _pageOrientation = PDFPageOrientationPortrait;
-        _paperInset = kDefaultPaperInsets;
-        _pagingMask = PDFPagingOptionNone;
+        self.paperSize = PDFPaperSizeUSLetter;
+        self.pageOrientation = PDFPageOrientationPortrait;
+        self.paperInset = kDefaultPaperInsets;
+        self.pagingMask = PDFPagingOptionNone;
     }
     
     return self;
 }
 
 - (void)drawPages:(CGRect)inBounds {
-    [self preparePersistance];
-    [self prepareContentForDrawing];
-    [self updateRenderingDelegates];
     [self layoutViews];
+    [self preparePersistance];
     [self computeGeometry];
     [self computeNumberOfPages];
-    for (NSInteger pageNumber = 0; pageNumber < self.numberOfPages; pageNumber++) {
-        UIGraphicsBeginPDFPage();
-        [self drawPageAtIndex:pageNumber inRect:self.printableRect];
-    }
+    [self prepareContentForDrawing];
     [self cleanContentAfterDrawing];
+	for (NSInteger pageNumber = 0; pageNumber < self.numberOfPages; pageNumber++) {
+		UIGraphicsBeginPDFPage();
+		[self drawPageAtIndex:pageNumber inRect:self.printableRect];
+	}
     [self cleanPersistance];
 }
 
@@ -237,16 +236,14 @@ static UIEdgeInsets const kDefaultPaperInsets = {30.f, 30.f, 30.f, 30.f};
     NSAssert(CGRectGetWidth(self.contentRect) >= 10.f && CGRectGetHeight(self.contentRect) >= 10.f,
              @"Invalid paperInsets or paperSize. Content rectangle should have at least 10 points width and height");
     
-    self.contentViewScale = self.contentRect.size.width / self.contentView.bounds.size.width;
-    self.contentRectScale = self.contentView.bounds.size.width / self.contentRect.size.width;
+    self.contentViewScale = self.contentRect.size.height / self.contentView.bounds.size.height;
+    self.contentRectScale = self.contentView.bounds.size.height / self.contentRect.size.height;
 }
 
 - (void)layoutViews {
     [self.headerView layoutIfNeeded];
     [self.contentView layoutIfNeeded];
     [self.footerView layoutIfNeeded];
-
-    [self updateFrames];
 }
 
 - (void)preparePersistance {
@@ -263,9 +260,7 @@ static UIEdgeInsets const kDefaultPaperInsets = {30.f, 30.f, 30.f, 30.f};
     [self.headerView prepareForDrawing];
     [self.contentView prepareForDrawing];
     [self.footerView prepareForDrawing];
-}
 
-- (void)updateFrames {
     CGRect viewFrame = self.headerView.frame;
     viewFrame.origin = CGPointZero;
     self.headerView.frame = viewFrame;
@@ -275,9 +270,7 @@ static UIEdgeInsets const kDefaultPaperInsets = {30.f, 30.f, 30.f, 30.f};
     viewFrame = self.footerView.frame;
     viewFrame.origin = CGPointZero;
     self.footerView.frame = viewFrame;
-}
-
-- (void)updateRenderingDelegates {
+    
     self.contentView.renderingDelegate = self;
     self.headerView.renderingDelegate = self;
     self.footerView.renderingDelegate = self;
@@ -309,7 +302,7 @@ static UIEdgeInsets const kDefaultPaperInsets = {30.f, 30.f, 30.f, 30.f};
         NSUInteger pageIndex = 0;
         CGRect pageOffset = [self scaledPageRectOffsetForIndex:pageIndex];
         CGPoint renderingOffset = CGPointZero;
-        while (CGRectGetMaxY(pageOffset) < CGRectGetHeight(self.contentView.drawingFrame)) {
+        while (CGRectGetMaxX(pageOffset) < CGRectGetWidth(self.contentView.drawingFrame)) {
             renderingOffset = [self.contentView renderingOffsetForPageRect:pageOffset];
             [self createPageRectWithRect:pageOffset offset:renderingOffset];
             ++pageIndex;
@@ -336,12 +329,12 @@ static UIEdgeInsets const kDefaultPaperInsets = {30.f, 30.f, 30.f, 30.f};
     } else {
         pageOffset.size = self.contentRect.size;
     }
-    pageOffset.origin.x = 0.f;
+    pageOffset.origin.y = 0.f;
     if ([self.pageRects hasObjectAtIndex:index - 1]) {
         CGRect previousPageRect = [self.pageRects[index - 1] CGRectValue];
-        pageOffset.origin.y = CGRectGetMaxY(previousPageRect);
+        pageOffset.origin.x = CGRectGetMaxX(previousPageRect);
     } else {
-        pageOffset.origin.y = index * CGRectGetHeight(pageOffset);
+        pageOffset.origin.x = index * CGRectGetWidth(pageOffset);
     }
     return pageOffset;
 }

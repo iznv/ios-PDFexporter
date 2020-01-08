@@ -93,7 +93,7 @@
     [self saveState];
     [self scrollContentForRect:rect usingBlock:^{
         CGPoint subviewRenderingOffset = [super renderingOffsetForPageRect:rect];
-        renderingOffset.y = fmaxf(renderingOffset.y, subviewRenderingOffset.y);
+        renderingOffset.x = fmaxf(renderingOffset.x, subviewRenderingOffset.x);
     }];
     [self restoreState];
 

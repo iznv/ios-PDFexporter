@@ -47,7 +47,7 @@
 
 - (void)drawViewWithinPageRect:(CGRect)rect {
     CGRect drawingFrame = self.drawingFrame;
-    drawingFrame.origin.y -= CGRectGetMinY(rect); // offset origin to current page
+    drawingFrame.origin.x -= CGRectGetMinX(rect); // offset origin to current page
     UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:drawingFrame cornerRadius:self.layer.cornerRadius];
     
     [self drawBackgroundWithPath:path];
