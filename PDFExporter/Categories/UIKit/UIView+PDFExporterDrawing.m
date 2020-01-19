@@ -24,7 +24,7 @@
 }
 
 - (CGRect)drawingFrame {
-    return self.frame;
+    return self.bounds;
 }
 
 #pragma mark - Drawing Setup
