@@ -47,14 +47,15 @@
 
 - (void)drawViewWithinPageRect:(CGRect)rect {
     CGRect drawingFrame = self.drawingFrame;
-    drawingFrame.origin.x -= CGRectGetMinX(rect); // offset origin to current page
-    UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:drawingFrame cornerRadius:self.layer.cornerRadius];
+    drawingFrame.origin.y -= CGRectGetMinY(rect); // offset origin to current page
+    UIBezierPath *contentPath = [UIBezierPath bezierPathWithRoundedRect:drawingFrame cornerRadius:self.layer.cornerRadius];
+    UIBezierPath *backgroundPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds cornerRadius:self.layer.cornerRadius];
     
-    [self drawBackgroundWithPath:path];
-    [self drawContentWithPath:path];
-    [self drawSubviewsWithPath:path withinPageRect:rect];
+    [self drawBackgroundWithPath:backgroundPath];
+    [self drawContentWithPath:contentPath];
+    [self drawSubviewsWithPath:contentPath withinPageRect:rect];
     if (self.layer.borderWidth != 0) {
-        [self drawBorderWithPath:path];
+        [self drawBorderWithPath:contentPath];
     }
 }
 
